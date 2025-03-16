@@ -46,7 +46,7 @@ vector<int> dijkstra_shortest_path(const Graph& G, int source, vector<int>& prev
 }
 
 vector<int> extract_shortest_path(const vector<int>& /*distances*/, const vector<int>& previous, int destination) {
-    vector<int> path;
+     vector<int> path;
 
     if (previous[destination] == -1) {
         return {};
@@ -63,13 +63,13 @@ vector<int> extract_shortest_path(const vector<int>& /*distances*/, const vector
 void print_path(const vector<int>& v, int total) {
     vector<int> path;
 
-    if (total == -1) {
+    if (total == -1 || previous[total] == -1) {
         cout << "No path found." << endl;
         return;
     }
 
-    for (int at = total; at != -1; at = v[at]) {
-        if (at < 0 || at >= v.size()) {
+    for (int at = total; at != -1; at = previous[at]) {
+        if (at < 0 || at >= previous.size()) {
             cerr << "Error: Invalid vertex index " << at << endl;
             return;
         }
@@ -90,5 +90,12 @@ void print_path(const vector<int>& v, int total) {
         }
         cout << path[i];
     }
-    cout << endl;
+
+    int totalCost = 0;
+    for (size_t i = 1; i < path.size(); ++i) {
+        int u = path[i - 1];
+        int v = path[i];
+        totalCost += get_edge_weight(u, v);
+    }
+    cout << " \nTotal cost is " << totalCost << endl;
 }
