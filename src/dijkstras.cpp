@@ -17,6 +17,11 @@ vector<int> dijkstra_shortest_path(const Graph& G, int source, vector<int>& prev
         if (dist > distance[u]) continue;
 
         for (const Edge& edge : G[u]) {
+            if (u < 0 || u >= G.numVertices) {
+                cerr << "Error: Invalid vertex index " << u << endl;
+                continue;
+            }
+
             int v = edge.dst;
             int weight = edge.weight;
 
