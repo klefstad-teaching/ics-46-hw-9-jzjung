@@ -1,111 +1,58 @@
 #include "dijkstras.h"
 
 vector<int> dijkstra_shortest_path(const Graph& G, int source, vector<int>& previous) {
-    vector<int> distance(G.numVertices, INF);
-    priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> pq;
+    int n = G.numVertices;
+    vector<int> distance(n, INF);
+    previous.resize(n, -1);
+    vector<bool> visited(n, false);
 
-    previous.resize(G.numVertices, -1);
+    priority_queue<Node, vector<Node>, greater<Node>> pq;
 
     distance[source] = 0;
-    pq.push({0, source});
+    pq.push(Node(source, 0));
 
     while (!pq.empty()) {
-        int dist = pq.top().first;
-        int u = pq.top().second;
+        int u = pq.top().vertex;
         pq.pop();
 
-        if (dist > distance[u]) continue;
+        if (visited[u]) continue;
+        visited[u] = true;
 
-        if (u < 0 || u >= G.numVertices) {
-            cerr << "Error: Invalid vertex index " << u << endl;
-            continue;
-        }
+        for (const Edge& e : G[u]) {
+            int v = e.dst;
+            int weight = e.weight;
 
-        if (G[u].empty()) {
-            cerr << "Error: No edges for vertex " << u << endl;
-            continue;
-        }
-
-        for (const Edge& edge : G[u]) {
-            int v = edge.dst;
-            int weight = edge.weight;
-
-            if (v < 0 || v >= G.numVertices) {
-                cerr << "Error: Invalid destination vertex " << v << endl;
-                continue;
-            }
-
-            if (distance[u] + weight < distance[v]) {
+            if (!visited[v] && distance[u] + weight < distance[v]) {
                 distance[v] = distance[u] + weight;
                 previous[v] = u;
-                pq.push({distance[v], v});
+                pq.push(Node(v, distance[v]));
             }
         }
     }
+
     return distance;
 }
 
-vector<int> extract_shortest_path(const vector<int>& /*distances*/, const vector<int>& previous, int destination) {
-     vector<int> path;
-
-    if (previous[destination] == -1) {
-        return {};
+vector<int> extract_shortest_path(const vector<int>& distance, const vector<int>& previous, int destination) {
+    vector<int> path;
+    for (int at = destination; at != -1; at = previous[at]) {
+        path.push_back(at);
     }
-
-    for (int v = destination; v != -1; v = previous[v]) {
-        path.push_back(v);
-    }
-
     reverse(path.begin(), path.end());
     return path;
 }
 
-void print_path(const vector<int>& v, int total) {
-    vector<int> path;
-
-    if (total == -1 || v[total] == -1) {
-        cout << "No path found." << endl;
-        return;
-    }
-
-    for (int at = total; at != -1; at = v[at]) {
-        if (at < 0 || static_cast<size_t>(at) >= v.size()) {
-            cerr << "Error: Invalid vertex index " << at << endl;
-            return;
-        }
-        path.push_back(at);
-    }
-
+void print_path(const vector<int>& path, int total) {
     if (path.empty()) {
         cout << "No path found." << endl;
-        return;
-    }
-
-    reverse(path.begin(), path.end());
-
-    cout << "Path: ";
-    for (size_t i = 0; i < path.size(); ++i) {
-        if (i != 0) {
-            cout << " -> ";
-        }
-        cout << path[i];
-    }
-
-    int totalCost = 0;
-    for (size_t i = 1; i < path.size(); ++i) {
-        int u = path[i - 1];
-        int v = path[i];
-        bool edgeFound = false;
-        for (const Edge& edge : G[u]) {
-            if (edge.dst == v) {
-                totalCost += edge.weight;
-                edgeFound = true;
-                break;
+    } else {
+        for (size_t i = 0; i < path.size(); ++i) {
+            cout << path[i];
+            if (i != path.size() - 1) {
+                cout << " -> ";
             }
         }
-        if (!edgeFound) {
-            cerr << "Error: Edge not found between " << u << " and " << v << endl;
-        }
+        cout << endl;
+        cout << "Total distance: " << total << endl;
     }
-    cout << " \nTotal cost is " << totalCost << endl;
 }
