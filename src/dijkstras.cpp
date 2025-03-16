@@ -38,12 +38,20 @@ vector<int> extract_shortest_path(const vector<int>& /*distances*/, const vector
 }
 
 void print_path(const vector<int>& v, int total) {
-    cout << "Shortest path (cost: " << total << "): ";
+    vector<int> path;
+
+    for (int at = total; at != -1; at = v[at]) {
+        path.push_back(at);
+    }
+
+    reverse(path.begin(), path.end());
+
+    cout << "Path: ";
     for (size_t i = 0; i < path.size(); ++i) {
-        cout << path[i];
-        if (i != path.size() - 1) {
+        if (i != 0) {
             cout << " -> ";
         }
+        cout << path[i];
     }
     cout << endl;
 }
