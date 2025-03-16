@@ -48,12 +48,12 @@ vector<int> dijkstra_shortest_path(const Graph& G, int source, vector<int>& prev
 vector<int> extract_shortest_path(const vector<int>& /*distances*/, const vector<int>& previous, int destination) {
     vector<int> path;
 
-    for (int v = destination; v != -1; v = previous[v]) {
-        path.push_back(v);
+    if (previous[destination] == -1) {
+        return {};
     }
 
-    if (path.empty() || previous[destination] == -1) {
-        return {};
+    for (int v = destination; v != -1; v = previous[v]) {
+        path.push_back(v);
     }
 
     reverse(path.begin(), path.end());
@@ -63,22 +63,17 @@ vector<int> extract_shortest_path(const vector<int>& /*distances*/, const vector
 void print_path(const vector<int>& v, int total) {
     vector<int> path;
 
-    if (total == -1) {
+    if (previous[destination] == -1) {
         cout << "No path found." << endl;
         return;
     }
 
-    for (int at = total; at != -1; at = v[at]) {
-        if (at < 0 || at >= v.size()) {
+    for (int at = destination; at != -1; at = previous[at]) {
+        if (at < 0 || at >= previous.size()) {
             cerr << "Error: Invalid vertex index " << at << endl;
             return;
         }
         path.push_back(at);
-    }
-
-    if (path.empty()) {
-        cout << "No path found." << endl;
-        return;
     }
 
     reverse(path.begin(), path.end());
