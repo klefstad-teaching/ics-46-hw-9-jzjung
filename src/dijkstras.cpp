@@ -69,7 +69,7 @@ void print_path(const vector<int>& v, int total) {
     }
 
     for (int at = total; at != -1; at = v[at]) {
-        if (at < 0 || at >= v.size()) {
+        if (at < 0 || static_cast<size_t>(at) >= v.size()) {
             cerr << "Error: Invalid vertex index " << at << endl;
             return;
         }
@@ -95,7 +95,17 @@ void print_path(const vector<int>& v, int total) {
     for (size_t i = 1; i < path.size(); ++i) {
         int u = path[i - 1];
         int v = path[i];
-        totalCost += get_edge_weight(u, v);
+        bool edgeFound = false;
+        for (const Edge& edge : G[u]) {
+            if (edge.dst == v) {
+                totalCost += edge.weight;
+                edgeFound = true;
+                break;
+            }
+        }
+        if (!edgeFound) {
+            cerr << "Error: Edge not found between " << u << " and " << v << endl;
+        }
     }
     cout << " \nTotal cost is " << totalCost << endl;
 }
