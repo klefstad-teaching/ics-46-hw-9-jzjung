@@ -63,17 +63,22 @@ vector<int> extract_shortest_path(const vector<int>& /*distances*/, const vector
 void print_path(const vector<int>& v, int total) {
     vector<int> path;
 
-    if (previous[destination] == -1) {
+    if (total == -1) {
         cout << "No path found." << endl;
         return;
     }
 
-    for (int at = destination; at != -1; at = previous[at]) {
-        if (at < 0 || at >= previous.size()) {
+    for (int at = total; at != -1; at = v[at]) {
+        if (at < 0 || at >= v.size()) {
             cerr << "Error: Invalid vertex index " << at << endl;
             return;
         }
         path.push_back(at);
+    }
+
+    if (path.empty()) {
+        cout << "No path found." << endl;
+        return;
     }
 
     reverse(path.begin(), path.end());
