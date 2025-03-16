@@ -16,14 +16,24 @@ vector<int> dijkstra_shortest_path(const Graph& G, int source, vector<int>& prev
 
         if (dist > distance[u]) continue;
 
-        for (const Edge& edge : G[u]) {
-            if (u < 0 || u >= G.numVertices) {
-                cerr << "Error: Invalid vertex index " << u << endl;
-                continue;
-            }
+        if (u < 0 || u >= G.numVertices) {
+            cerr << "Error: Invalid vertex index " << u << endl;
+            continue;
+        }
 
+        if (G[u].empty()) {
+            cerr << "Error: No edges for vertex " << u << endl;
+            continue;
+        }
+
+        for (const Edge& edge : G[u]) {
             int v = edge.dst;
             int weight = edge.weight;
+
+            if (v < 0 || v >= G.numVertices) {
+                cerr << "Error: Invalid destination vertex " << v << endl;
+                continue;
+            }
 
             if (distance[u] + weight < distance[v]) {
                 distance[v] = distance[u] + weight;
